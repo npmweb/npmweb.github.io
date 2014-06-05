@@ -1,5 +1,4 @@
-need-bee.com
-===============
+npmweb.org
+==========
 
-Personal programming blog implemented in Jekyll and hosted on GitHub
-Pages.
+Organization blog for NPM Web team, hosted in GitHub Pages.
