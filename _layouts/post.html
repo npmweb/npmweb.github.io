@@ -10,7 +10,7 @@
         <div class="medium-8 columns">
           <h1>{{ page.title }}</h1>
           <p class="muted">{{ page.date | date_to_long_string }}</p>
-          <p>By <a href="https://twitter.com/{{ site.data.authors[page.author].twitter }}">{{ site.data.authors[page.author].name }}</a></p> 
+          <p>By <a href="/authors/{{ page.author }}">{{ site.data.authors[page.author].name }}</a></p> 
           <div>
             {% for category in page.categories %}
               <a href="/{{ category }}/"><span class="label">{{ category | capitalize }}</span></a>

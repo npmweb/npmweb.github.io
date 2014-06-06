@@ -1,4 +1,4 @@
-<h1>{{ include.category | capitalize }}</h1>
+<h1>Posts in {{ include.category | capitalize }}</h1>
 
 {% for post in site.categories[include.category] limit:5 %}
   {% include post_summary.html post=post %}
