@@ -1,0 +1,7 @@
+{
+  "name": "npmweb",
+  "dependencies": {
+    "foundation": "zurb/bower-foundation",
+    "requirejs": "jrburke/requirejs-bower"
+  }
+}
