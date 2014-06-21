@@ -1,0 +1,67 @@
+---
+title: Managing a Many-Webapp Ecosystem
+layout: post
+author: josh
+
+---
+
+The way we do webapps is a bit different than most places I've heard of.
+
+When it comes to how many and what kinds of webapps a business runs, I've heard of a few different setups:
+
+- **Your business *is* the web,** so you've custom-built one or more large webapps.
+- **The webapps are a core channel for your business,** so you run a few large ones, either off-the-shelf or custom-built.
+- **You're a dev shop,** so you've built or set up many webapps, but don't have day-to-day responsibility for them.
+
+Our needs are a bit different from those because we're a "house of brands." Our organization has many smaller organizations within it: children's ministries, small groups, missions, care, not to mention five separate churches, each with their own brand. And because we're fairly web-focused, each one wants to do a lot online: brochure information, social media, registrations, administrative tracking.
+
+With so many web needs, we could have tried to find an all-in-one solution, but we've been part of Holy Grail searches before and those never end well. Instead, our architect designed an architecture of many webapps, most of them very small, each targeted to meet a specific need. It's worked fairly well for us so far, but because it's such an uncommon architecture we've had to learn a lot of lessons on our own. Here's what we've found so far.
+
+Frameworks
+==========
+
+- **You always need a framework, especially when you don't.** How dead-simple is the webapp you're making? If it's just one page, you don't need a framework, right? Well, are you accessing the database? Validating form input? Securing output? Chances are there's something you're doing that a framework would do for you. And your framework is easy to drop in if you...
+- **Choose frameworks that scale well.** Specifically, what I mean is frameworks that are easy to use for very small systems, yet are robust enough to handle larger, more complex systems. [Laravel](http://laravel.com) is a great example in the PHP space. You don't want to be forced to use multiple frameworks more than you need to. However...
+- **Multiple frameworks are okay if you have a reason for each.** For example, we use ExpressionEngine for our large CMS sites because it's robust enough to handle their needs. Then we use WordPress for our small CMS sites, because it's easier to hire and find plugins for, and for content editors to use. Finally, we use Laravel for general webapp development. But whatever frameworks you choose, ...
+- **Make sure you have in-house knowledge of the frameworks.** The first webapps we had developed were by a vendor using a framework our team never got familiar with. This led to a long turnaround time for bug fixes, and eventually having to reimplement them in a framework we knew.
+- **When evaluating frameworks, keep industry trends in mind.** If the features are comparable, go with the one that is the industry standard and/or gaining popularity - it will make it much easier to outsource work, find open-source plugins, reuse past code, etc. But tool choice doesn't happen in a vacuum, so...
+- **Choose your tools with the skill set (both present and future) of your team in mind.** Does your team already run some PHP systems? It may not be the sexiest language, but using it may be more efficient than retraining everyone. Plus, we all already need to know one server-side language, HTML, CSS, and JavaScript; do you really want to add one or two more langauges into the mix? Good developers can pick up any language, but it takes time to become an expert. The same principle applies to development tools. Is your team uncomfortable with the command line? It may be worth looking into GUI tools first, at least until they stop meeting your needs. But don't stress out too much about picking your tools, because...
+- **It's more important to pick a platform and learn it than it is to pick the "right" platform.** You can end up in decision limbo indefinitely, and new tools are always coming along. There are [no silver bullets](http://faculty.salisbury.edu/~xswang/Research/Papers/SERelated/no-silver-bullet.pdf). That said, you need to...
+- **Have a proactive strategy for re-evaluating.** You can't realistically look at and switch to every new thing that comes along, but you also don't want to look up and be using antiquated software. Decide what *would* be [a good reason to start looking](http://ellislab.com/blog/entry/ellislab-seeking-new-owner-for-codeigniter).
+- **Use SaaS platforms that have good APIs.** You don't have to write everything yourself. It's a huge time-savings to use an off-the-shelf system, and even more so if someone else hosts it for you. But in a many-webapp ecosystem you'll probably need that data somewhere else, so you'll want to have good APIs to work with it. Two examples we use are [MailChimp](http://mailchimp.com/) for email lists and [ManagedMissions](http://managedmissions.com/) for short-term missions trips.
+
+Architecture
+============
+
+- **Minimize dependencies between systems.** I've worked on systems before where a Java app made a web service request to a PHP page, which made another request to an ASP.NET page, that accessed a legacy database. You don't need *me* to tell you this is a recipe for disaster. For us, we've created a single middleware web service that sits between our webapps and all of our backend systems, like our central user database, login system, user importer, and payment and form processing. This way, we can replace any of those backend components in a single place, without having to update dozens of apps. But, on the flip side, we don't put all our data behind the middleware: for application-specific data, it minimizes dependencies to access that data directly in an app database.
+- **Don't overdesign. Your architecture should be as complex as your requirements: no more, no less.** In some circles, ["CRUD"](http://en.wikipedia.org/wiki/CRUD) is used as an architectural criticism. But if your webapp really only needs to create, read, update, and delete data, then it's probably overkill to add a CommandBus and events. Every organization is different: for us, systems' requirements rarely expand significantly beyond their initial scope. If yours usually do, then you probably want to start with a more complex architecture than you otherwise would.
+- **Standardize for the ecosystem, not for one project.** Don't pick a tool for Laravel if there's one that will also work for WordPress and ExpressionEngine. You may lose a little productivity, but you'll more than make up for it by not having to have a different tool for each of your frameworks. This may even mean not using built-in facilities like WordPress's curl library. Now, if you *really* want to be a future-proof ninja, ...
+- **Respect the POPO.** That's, right, [Plain Ol' PHP Objects](http://www.javaleaks.org/open-source/php/plain-old-php-object.html). There's [a movement](http://philsturgeon.co.uk/blog/2014/01/the-tribal-framework-mindset) in the PHP world right now to build code that's framework-agnostic, and it's awesome that new frameworks are actually set up to encourage this. If you're just making a web service request, your code doesn't really need to care if it's run from CodeIgniter, Laravel, or WordPress. And if you're following the [single responsibility principle](http://en.wikipedia.org/wiki/Single_responsibility_principle), your code should only be doing one thing. When [we write PHP libraries](https://github.com/npmweb), we make the PHP code framework agnostic, but then add in optional Laravel-specific hooks to make loading the code in Laravel work better. Fork them and add in hooks for your own framework!
+
+
+Project Management
+==================
+
+- **Treat different types of project differently.** For example, we can bang out WordPress blogs without a second thought. But building large webapps takes more extensive scheduling and testing. And a campaign that requires minor changes to multiple sites requires more orchestrating than you'd think. But, at the same time,...
+- **Find solutions that work across different types of project.** For example, you probably don't want a totally different task management tool for apps and CMS sites. It's fine to try a process out on a single type of project, but if you know for sure it will never work for any other type, maybe there's a better option out there.
+- **Come up with guidelines for when to say "yes" to systems.** Note that I didn't say "when to say 'no'". If you're going to have an ecosystem of many webapps, your temptation will be to say "yes" by default. Instead, you need to default to saying "no", and only say "yes" for the right system. For example, when building large webapps, our guidelines are that the system should not be available off-the-shelf, should not overlap with the purpose of another system we have, should meet needs in multiple departments across our organization, and should be based on an organizational process that is established, not experimental.
+
+Maintenance
+============
+- **Consider team cognitive load.** Not every developer is a programming nerd like me, wanting to spend free time reading about code. And even if they are, if they don't know OO, SASS, package managers, and build tools, then you probably don't want to introduce them all at once. You might be able to get a webapp released, but it won't be something that just anyone on the team can maintain.
+- **Considered the "care and feeding" capacity of your team.** Running a webapp is about way more than just building it. It's been known for a long time that most of the cost of software is in maintenance. If you don't plan for this, you'll overextend yourself and build more systems than you can support. Think about the hours your staff have available, the budget for enhancements, and server costs. You could support any of them individually, but you can't support all of them at once. And once you have capacity to maintain the systems, ...
+- ***Actually* maintain your systems. And find tools to help you.** For example, running WordPress updates seems like it would be easy, but when you have dozens of sites, each with dozens of plugins, it'll take a while. The testing portion of the update will need to be done by hand regardless, so why not [use a tool](https://managewp.com/) to do the updates themselves? Also, pick an update schedule for how often you'll run the updates. Consider it a project so you won't have to squeeze it in.
+- **Use an automated deployment tool.** No matter how unique your infrastructure is, it's probably not a unique beautiful snowflake that requires the care of hand deployments. In fact, the more care your deployment needs, the more important it is to automate it, to make sure steps aren't missed. If you aren't familiar with the whole range of types of automated deployment tools out there, [learn about 'em](http://css-tricks.com/deployment/). We use [dploy.io](http://dploy.io) by Beanstalk because of the extensive logging in the web interface, but you may prefer something more command-liney like [Capistrano](http://capistranorb.com/). Whichever automated deployment tool you pick, pick *something*, and you'll [feel like this](http://devpractic.es/post/89425969374/first-time-doing-an-automated-deployment).
+- **Use rap sheets to keep track of your systems' details.** I don't know if "rap sheet" is a standard software term or if we made it up, but it works awesome. Have a single document for each webapp in an easy-to-find place that tells you everything you need to know about it: where it is in version control, who built it, what technologies it runs on, dependencies on other systems, common support requests, etc. We keep ours in Google Drive, but a wiki or GitHub/Bitbucket readmes are two other good options.
+
+
+Potpourri
+=========
+
+- **Come up with a standard look and feel.** Just because you have a lot of webapps, your users don't need to know that. If they do, they'll get confused. Come up with consistent branding, even reusable template markup. It doesn't have to be used for every site, but it needs to be the default that you start from.
+- **Come up with a domain strategy.** Currently we have way too many domain names. (I won't even tell you how many, that's how embarassed I am about it!) But we've been consolidating them down to a few central ones, based around a strategy. [Our](http://northpoint.org) ["cam](http://buckheadchurch.org)[pus"](http://brownsbridge.org) [web](http://watermarkechurch.com)[sites](http://gwinnettchurch.org) are for informing newcomers. The [MyChurch](http://my.northpointministries.org) site is for involved people, and for people who are beginning to get involved. [NPM Staff](http://npmstaff.org) probably doesn't need an explanation. And with some simple Apache config we can run multiple systems on the same domain name: CodeIgniter at one path, Laravel at another, and WordPress at the root as a catch-all. We'll never get down to just three types of domain, and we don't need to, but, again, it needs to be the default decision.
+
+So Yeah
+=======
+
+So is there anyone else out there managing a many-webapp ecosystem, or is it just us? Even if you don't have as many as us, are you doing any of the above? Let us know on Twitter at [@npmweb](https://twitter.com/npmweb), and let us know what's helped you manage your webapps!
