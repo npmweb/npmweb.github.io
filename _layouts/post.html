@@ -13,7 +13,7 @@
           <p>By <a href="/authors/{{ page.author }}">{{ site.data.authors[page.author].name }}</a></p> 
           <div>
             {% for category in page.categories %}
-              <a href="/{{ category }}/"><span class="label">{{ category | capitalize }}</span></a>
+              <a href="/{{ category }}/"><span class="label">{{ site.data.categories[category].name }}</span></a>
             {% endfor %}
           </div>
           {{ content }}
