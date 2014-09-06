@@ -1,4 +1,4 @@
-<h1>Posts by {{ site.data.authors[include.author].name }}</h1>
+<h2>Posts by {{ site.data.authors[include.author].name }}</h2>
 
 {% for post in site.posts %}
 	{% if post.author == include.author %}
