@@ -2,6 +2,10 @@ architecture:
   name: Architecture
   description: "About system and ecosystem design."
 
+processes:
+  name: Processes
+  description: "How to do what we do more effectively."
+
 tools:
   name: Tools
   description: "About development tools and frameworks we use."
