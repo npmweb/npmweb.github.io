@@ -1,11 +1,11 @@
-architecture:
-  name: Architecture
-  description: "About system and ecosystem design."
+strategic:
+  name: Strategic
+  description: "Big-picture principles about operating as a digital team."
 
-processes:
-  name: Processes
-  description: "How to do what we do more effectively."
+tactical:
+  name: Tactical
+  description: "Small-picture tips on tools."
 
-tools:
-  name: Tools
-  description: "About development tools and frameworks we use."
+horseplay:
+  name: Horseplay
+  description: "When we literally cannot right now."
